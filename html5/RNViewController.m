@@ -21,32 +21,6 @@
     [refreshSpinner release];
     [backScrollView release];
 }
--(void)creatrefreshview{
-    _refrashHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0 - REFRESH_HEADER_HEIGHT, 320, REFRESH_HEADER_HEIGHT)];
-    _refrashHeaderView.backgroundColor = [UIColor clearColor];
-    
-    refreshLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, REFRESH_HEADER_HEIGHT)];//
-    refreshLabel.backgroundColor = [UIColor clearColor];
-    refreshLabel.font = [UIFont boldSystemFontOfSize:12.0];
-    refreshLabel.textAlignment = UITextAlignmentCenter;
-    refreshLabel.text = @"下拉刷新";
-    refreshArrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow.png"]];
-    refreshArrow.frame = CGRectMake((REFRESH_HEADER_HEIGHT - 27) / 2,
-                                    (REFRESH_HEADER_HEIGHT - 44) / 2,
-                                    27, 44);
-    
-    refreshSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    refreshSpinner.frame = CGRectMake((REFRESH_HEADER_HEIGHT - 20) / 2, (REFRESH_HEADER_HEIGHT - 20) / 2, 20, 20);
-    refreshSpinner.hidesWhenStopped = YES;
-    
-    [_refrashHeaderView addSubview:refreshLabel];
-    [_refrashHeaderView addSubview:refreshArrow];
-    [_refrashHeaderView addSubview:refreshSpinner];
-
-    
-
-}
-
 
 - (void)viewDidLoad
 {
@@ -141,6 +115,66 @@
     
     
 }
+
+- (void)viewDidUnload
+{
+    [super viewDidUnload];
+    // Release any retained subviews of the main view.
+    
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+}
+// Notifies when rotation begins, reaches halfway point and ends.
+//将开始旋转执行
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
+    
+    NSLog(@"syp===w=%f,h=%f",self.view.bounds.size.width,self.view.bounds.size.height);
+    
+    
+    if (self.interfaceOrientation == UIInterfaceOrientationLandscapeLeft || self.interfaceOrientation == UIInterfaceOrientationLandscapeRight) {  
+        
+        _mainwebview.frame = CGRectMake(5, 0, 320-10,380);
+        backScrollView.frame = CGRectMake(5, 0, 320-10, 380);
+    }else {  
+        _mainwebview.frame = CGRectMake(5, 0, 460-10,320); 
+        backScrollView.frame = CGRectMake(5, 0, 460-10, 320);
+        
+    }  
+    
+    
+    [_mainwebview reload];
+}
+
+
+-(void)creatrefreshview{
+    _refrashHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0 - REFRESH_HEADER_HEIGHT, 320, REFRESH_HEADER_HEIGHT)];
+    _refrashHeaderView.backgroundColor = [UIColor clearColor];
+    
+    refreshLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, REFRESH_HEADER_HEIGHT)];//
+    refreshLabel.backgroundColor = [UIColor clearColor];
+    refreshLabel.font = [UIFont boldSystemFontOfSize:12.0];
+    refreshLabel.textAlignment = UITextAlignmentCenter;
+    refreshLabel.text = @"下拉刷新";
+    refreshArrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow.png"]];
+    refreshArrow.frame = CGRectMake((REFRESH_HEADER_HEIGHT - 27) / 2,
+                                    (REFRESH_HEADER_HEIGHT - 44) / 2,
+                                    27, 44);
+    
+    refreshSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    refreshSpinner.frame = CGRectMake((REFRESH_HEADER_HEIGHT - 20) / 2, (REFRESH_HEADER_HEIGHT - 20) / 2, 20, 20);
+    refreshSpinner.hidesWhenStopped = YES;
+    
+    [_refrashHeaderView addSubview:refreshLabel];
+    [_refrashHeaderView addSubview:refreshArrow];
+    [_refrashHeaderView addSubview:refreshSpinner];
+    
+    
+    
+}
+
 -(void ) doubleTap:(UITapGestureRecognizer*) sender {
     NSLog(@"syp===zhegshi shuangji   ");
 }
@@ -182,185 +216,9 @@
 
     
 }
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
 
-}
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
-}
-// Notifies when rotation begins, reaches halfway point and ends.
-//将开始旋转执行
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
-    
-    NSLog(@"syp===w=%f,h=%f",self.view.bounds.size.width,self.view.bounds.size.height);
-    
-    
-    if (self.interfaceOrientation == UIInterfaceOrientationLandscapeLeft || self.interfaceOrientation == UIInterfaceOrientationLandscapeRight) {  
-        
-        _mainwebview.frame = CGRectMake(5, 0, 320-10,380);
-        backScrollView.frame = CGRectMake(5, 0, 320-10, 380);
-    }else {  
-        _mainwebview.frame = CGRectMake(5, 0, 460-10,320); 
-         backScrollView.frame = CGRectMake(5, 0, 460-10, 320);
-        
-    }  
-    
-     
-    [_mainwebview reload];
-}
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
-    NSLock* lock = [[NSLock alloc] init];
-    [lock lock];
-    NSString *requestString = [[request URL] absoluteString];
- //   NSLog(@"requestString==%@",requestString);
-    NSArray *components = [requestString componentsSeparatedByString:@":"];
-    if ([components count] > 1 && [(NSString *)[components objectAtIndex:0] isEqualToString:@"lg"]) {
-       // NSLog(@"rnlog==%@",requestString);
-        return NO;
-    }
-    if ([components count] > 1 && [(NSString *)[components objectAtIndex:0] isEqualToString:@"myweb"]) {
-        if([(NSString *)[components objectAtIndex:1] isEqualToString:@"touch"]) 
-        {
-           // NSLog(@"%@",[components objectAtIndex:2]);
-        }
-        [lock unlock];
-        [lock release];
-        return NO;
-    }
-    [lock unlock];
-    [lock release];
-    return YES;
-}
-- (void)webViewDidStartLoad:(UIWebView *)webView{
-    NSLog(@"webViewDidStartLoad ");
-    /*
-    [_mainwebview stringByEvaluatingJavaScriptFromString:@"var script = document.createElement('script');"
-    "script.type = 'text/javascript';"
-    "script.text = \"function Op(o)"
-    "{"
-       " var x=y=0;"
-       " do{"
-           " x+=o.offsetLeft;"
-           "y+=o.offsetTop;"
-        "}"
-        "while (o=o.offsetParent);"
-        "return {\"x\":x,\"y\":y};"
-    "}"
-     
-     "function addmyevent() {"
-         "var childs = document.getElementsByTagName(\"DIV\");"
-         "for(child in childs){"
-             "child.style.onMouseDown = \"touchdiv(event)\""
-         "}"
-     "}"
-     
-    "function touchdiv(event){"
-        "var divid;"
-        "var int_x = window.pageXOffset;"
-        "var int_y = window.pageYOffset;"
-        "var int_displaywidth = window.outerWidth;"
-        "var div_top = event.clientX;"
-        "var div_left = event.clientY;"
-        "var tagid = document.elementFromPoint(div_top,div_left);"
-        "var tagname = tagid.tagName;"
-        "while(1){"
-            "if(tagid.tagName == \"DIV\"){"
-                "divid = tagid;"
-                "var div_x= Op(divid).x;"
-                "var div_y= Op(divid).y;"
-                "var div_w = divid.clientWidth;"
-                "var div_h = divid.clientHeight;"
-                "var child = document.createElement(\"div\");"
-                
-                "child.style.position=\"absolute\";"
-                "child.style.top=div_y+\"px\";"
-                "child.style.left=div_x+\"px\";"
-                "child.style.width = div_w+\"px\";"
-                "child.style.height = div_h+\"px\";"
-                "child.style.backgroundColor = \"#ff0000\";"
-                "document.body.appendChild(child);"
-                "break;"
-            "}"
-            "tagid = tagid.parentElement;"
-            "if(tagid == null){"
-                "break;"
-            "}"
-        "}"
-     "};"];
-
-    */
-}
-- (void)webViewDidFinishLoad:(UIWebView *)webView{
-    NSLog(@"webViewDidFinishLoad ");
-    
-    [_mainwebview stringByEvaluatingJavaScriptFromString:@"var script = document.createElement('script');"
-     "script.type = 'text/javascript';"
-     "script.text = \"function MyWebViewSize() { "
-     "var size = '';"
-     "var theHeight = document.body.scrollHeight;"
-     "var thewidth = document.body.scrollWidth;"
-     "size = theHeight;"
-     "alert(size);"
-     "return size;"
-     "}\";"
-     "document.getElementsByTagName('head')[0].appendChild(script);"]; 
-    
-    NSString *size =  [_mainwebview stringByEvaluatingJavaScriptFromString:@"addmyevent();"];
-    NSLog(@"syp===size=%@",size);
-  //   _mainwebview.frame = CGRectMake(5, 0, self.view.bounds.size.width-10, [size intValue]);
-    
-    CGSize actualSize = [_mainwebview sizeThatFits:CGSizeZero];
-    
-    CGRect newFrame = _mainwebview.frame;
-    newFrame.size.height = actualSize.height;
-    _mainwebview.frame = newFrame;
-    [backScrollView setContentSize:CGSizeMake(self.view.bounds.size.width, actualSize.height)];
-   // [_mainwebview stringByEvaluatingJavaScriptFromString:@"addmyevent();"];
-    
-}
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error{
-    NSLog(@"didFailLoadWithError ===error =%@",error);
-}
-//拖动效果
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-  //  NSLog(@"scrollViewWillBeginDragging===x=%@,y=%@",scrollView.contentOffset.x,scrollView.contentOffset.y);
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-  //   NSLog(@"scrollViewDidScroll===x=%f,y=%f",scrollView.contentOffset.x,scrollView.contentOffset.y);
-    if(scrollView.contentOffset.y >0){
-        
-    }
-    if (scrollView.contentOffset.y < 0) {
-        // Update the arrow direction and label
-        [UIView beginAnimations:nil context:NULL];
-        CGRect frame;
-        frame.origin.y = -REFRESH_HEADER_HEIGHT - scrollView.contentOffset.y;
-        frame.origin.x = 0;
-        frame.size.width = 320;
-        frame.size.width = REFRESH_HEADER_HEIGHT;
-        _refrashHeaderView.frame = frame;
-        if (scrollView.contentOffset.y < -REFRESH_HEADER_HEIGHT) {
-            // User is scrolling above the header
-            refreshLabel.text = @"松开刷新";
-            [refreshArrow layer].transform = CATransform3DMakeRotation(M_PI, 0, 0, 1);
-        } else { // User is scrolling somewhere within the header
-            refreshLabel.text = @"下拉刷新";
-            [refreshArrow layer].transform = CATransform3DMakeRotation(M_PI * 2, 0, 0, 1);
-        }
-        [UIView commitAnimations];
-    }
-    if (scrollView.contentOffset.y > scrollView.contentSize.height) {
-         ;
-    }
-
-}
 - (void)startLoading {
 
     // Show the header
@@ -388,7 +246,7 @@
     frame.origin.y = -REFRESH_HEADER_HEIGHT;
     frame.origin.x = 0;
     frame.size.width = 320;
-    frame.size.width = REFRESH_HEADER_HEIGHT;
+    frame.size.height = REFRESH_HEADER_HEIGHT;
     _refrashHeaderView.frame = frame;
     
     [UIView commitAnimations];
@@ -405,17 +263,7 @@
         
     }
 }
-- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView{
-    NSLog(@"scrollViewWillBeginDecelerating");
-    
-}
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-     NSLog(@"scrollViewDidEndDragging===");
-    if (scrollView.contentOffset.y <= -REFRESH_HEADER_HEIGHT) {
-        // Released above the header
-        [self startLoading];
-    }
-}    
+
 -(void)testTouchPoint{
     
     int  scrollPositionY  = [[_mainwebview  stringByEvaluatingJavaScriptFromString:@"window.pageYOffset"] intValue];   
@@ -499,6 +347,171 @@
             _screenShotOfWebView = nil;
             
         }
+    }
+}
+
+#pragma mark - UIWebViewDelegate Methods
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
+    NSLock* lock = [[NSLock alloc] init];
+    [lock lock];
+    NSString *requestString = [[request URL] absoluteString];
+    //   NSLog(@"requestString==%@",requestString);
+    NSArray *components = [requestString componentsSeparatedByString:@":"];
+    if ([components count] > 1 && [(NSString *)[components objectAtIndex:0] isEqualToString:@"lg"]) {
+        // NSLog(@"rnlog==%@",requestString);
+        return NO;
+    }
+    if ([components count] > 1 && [(NSString *)[components objectAtIndex:0] isEqualToString:@"myweb"]) {
+        if([(NSString *)[components objectAtIndex:1] isEqualToString:@"touch"]) 
+        {
+            // NSLog(@"%@",[components objectAtIndex:2]);
+        }
+        [lock unlock];
+        [lock release];
+        return NO;
+    }
+    [lock unlock];
+    [lock release];
+    return YES;
+}
+- (void)webViewDidStartLoad:(UIWebView *)webView{
+    NSLog(@"webViewDidStartLoad ");
+    /*
+     [_mainwebview stringByEvaluatingJavaScriptFromString:@"var script = document.createElement('script');"
+     "script.type = 'text/javascript';"
+     "script.text = \"function Op(o)"
+     "{"
+     " var x=y=0;"
+     " do{"
+     " x+=o.offsetLeft;"
+     "y+=o.offsetTop;"
+     "}"
+     "while (o=o.offsetParent);"
+     "return {\"x\":x,\"y\":y};"
+     "}"
+     
+     "function addmyevent() {"
+     "var childs = document.getElementsByTagName(\"DIV\");"
+     "for(child in childs){"
+     "child.style.onMouseDown = \"touchdiv(event)\""
+     "}"
+     "}"
+     
+     "function touchdiv(event){"
+     "var divid;"
+     "var int_x = window.pageXOffset;"
+     "var int_y = window.pageYOffset;"
+     "var int_displaywidth = window.outerWidth;"
+     "var div_top = event.clientX;"
+     "var div_left = event.clientY;"
+     "var tagid = document.elementFromPoint(div_top,div_left);"
+     "var tagname = tagid.tagName;"
+     "while(1){"
+     "if(tagid.tagName == \"DIV\"){"
+     "divid = tagid;"
+     "var div_x= Op(divid).x;"
+     "var div_y= Op(divid).y;"
+     "var div_w = divid.clientWidth;"
+     "var div_h = divid.clientHeight;"
+     "var child = document.createElement(\"div\");"
+     
+     "child.style.position=\"absolute\";"
+     "child.style.top=div_y+\"px\";"
+     "child.style.left=div_x+\"px\";"
+     "child.style.width = div_w+\"px\";"
+     "child.style.height = div_h+\"px\";"
+     "child.style.backgroundColor = \"#ff0000\";"
+     "document.body.appendChild(child);"
+     "break;"
+     "}"
+     "tagid = tagid.parentElement;"
+     "if(tagid == null){"
+     "break;"
+     "}"
+     "}"
+     "};"];
+     
+     */
+}
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+    NSLog(@"webViewDidFinishLoad ");
+    
+    [_mainwebview stringByEvaluatingJavaScriptFromString:@"var script = document.createElement('script');"
+     "script.type = 'text/javascript';"
+     "script.text = \"function MyWebViewSize() { "
+     "var size = '';"
+     "var theHeight = document.body.scrollHeight;"
+     "var thewidth = document.body.scrollWidth;"
+     "size = theHeight;"
+     "alert(size);"
+     "return size;"
+     "}\";"
+     "document.getElementsByTagName('head')[0].appendChild(script);"]; 
+    
+    NSString *size =  [_mainwebview stringByEvaluatingJavaScriptFromString:@"addmyevent();"];
+    NSLog(@"syp===size=%@",size);
+    //   _mainwebview.frame = CGRectMake(5, 0, self.view.bounds.size.width-10, [size intValue]);
+    
+    CGSize actualSize = [_mainwebview sizeThatFits:CGSizeZero];
+    
+    CGRect newFrame = _mainwebview.frame;
+    newFrame.size.height = actualSize.height;
+    _mainwebview.frame = newFrame;
+    [backScrollView setContentSize:CGSizeMake(self.view.bounds.size.width, actualSize.height)];
+    // [_mainwebview stringByEvaluatingJavaScriptFromString:@"addmyevent();"];
+    
+}
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error{
+    NSLog(@"didFailLoadWithError ===error =%@",error);
+}
+
+#pragma mark - UIScrollViewDelegate Methods
+//拖动效果
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    //  NSLog(@"scrollViewWillBeginDragging===x=%@,y=%@",scrollView.contentOffset.x,scrollView.contentOffset.y);
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    //   NSLog(@"scrollViewDidScroll===x=%f,y=%f",scrollView.contentOffset.x,scrollView.contentOffset.y);
+    if(scrollView.contentOffset.y >0){
+        
+    }
+    if (scrollView.contentOffset.y < 0) {
+        // Update the arrow direction and label
+        [UIView beginAnimations:nil context:NULL];
+        CGRect frame;
+        frame.origin.y = -REFRESH_HEADER_HEIGHT - scrollView.contentOffset.y;
+        frame.origin.x = 0;
+        frame.size.width = 320;
+        frame.size.width = REFRESH_HEADER_HEIGHT;
+        _refrashHeaderView.frame = frame;
+        if (scrollView.contentOffset.y < -REFRESH_HEADER_HEIGHT) {
+            // User is scrolling above the header
+            refreshLabel.text = @"松开刷新";
+            [refreshArrow layer].transform = CATransform3DMakeRotation(M_PI, 0, 0, 1);
+        } else { // User is scrolling somewhere within the header
+            refreshLabel.text = @"下拉刷新";
+            [refreshArrow layer].transform = CATransform3DMakeRotation(M_PI * 2, 0, 0, 1);
+        }
+        [UIView commitAnimations];
+    }
+    if (scrollView.contentOffset.y > scrollView.contentSize.height) {
+        ;
+    }
+    
+}
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView{
+    NSLog(@"scrollViewWillBeginDecelerating");
+    
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    NSLog(@"scrollViewDidEndDragging===");
+    if (scrollView.contentOffset.y <= -REFRESH_HEADER_HEIGHT) {
+        // Released above the header
+        [self startLoading];
     }
 }
 
